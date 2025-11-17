@@ -1,0 +1,69 @@
+{
+  "rituals": [
+    {
+      "id": "daily_rest",
+      "title": "Daily Rest",
+      "description": "Sit quietly by the fire for 3–5 minutes. Breathe slowly and listen.",
+      "cooldownHours": 24,
+      "warmth": 2,
+      "type": "simple",
+      "unlockWarmth": 0,
+      "tags": ["rest", "daily"]
+    },
+    {
+      "id": "burden_release",
+      "title": "Burden Release",
+      "description": "Write a short burden and release it into the fire (anonymous).",
+      "cooldownHours": 12,
+      "warmth": 5,
+      "type": "input",
+      "unlockWarmth": 0,
+      "tags": ["release"]
+    },
+    {
+      "id": "gratitude_list",
+      "title": "Gratitude List",
+      "description": "Write three things you are grateful for. Read them aloud softly.",
+      "cooldownHours": 6,
+      "warmth": 3,
+      "type": "input",
+      "unlockWarmth": 0,
+      "tags": ["gratitude"]
+    },
+    {
+      "id": "stillness_prayer",
+      "title": "Ritual of Stillness",
+      "description": "A 10-minute guided silence with scripture-lit prompt to rest in God.",
+      "cooldownHours": 48,
+      "warmth": 8,
+      "type": "guided",
+      "unlockWarmth": 20,
+      "tags": ["prayer","divine"]
+    },
+    {
+      "id": "forgiveness_rite",
+      "title": "Forgiveness Rite",
+      "description": "A guided sequence to name hurt, ask God for help, and let go.",
+      "cooldownHours": 72,
+      "warmth": 12,
+      "type": "guided",
+      "unlockWarmth": 50,
+      "tags": ["forgiveness","healing"]
+    },
+    {
+      "id": "destiny_vigil",
+      "title": "Destiny Vigil",
+      "description": "Late-night vigil (20–30 min). May reveal a Destiny Line if eligible.",
+      "cooldownHours": 168,
+      "warmth": 25,
+      "type": "guided",
+      "unlockWarmth": 100,
+      "tags": ["destiny","vigil"]
+    }
+  ],
+  "scripturePrompts": [
+    { "id": "ps23", "text": "The Lord is my shepherd; I have all that I need. — (Psalm 23:1 NLT-style)" },
+    { "id": "isa41", "text": "Don't be afraid — I am with you. — (Isaiah 41:10 NLT-style)" },
+    { "id": "matt11", "text": "Come to me all who are weary; I will give you rest. — (Matthew 11:28 NLT-style)" }
+  ]
+}

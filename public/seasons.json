@@ -1,0 +1,58 @@
+{
+  "seasons": [
+    {
+      "id": "spring",
+      "name": "Spring — Renewal",
+      "months": [3,4,5],
+      "colorFrom": "#E6FFFA",
+      "colorTo": "#0f172a",
+      "ambientBoost": 0.05,
+      "description": "Renewal, regrowth, new beginnings. Gentle hope."
+    },
+    {
+      "id": "summer",
+      "name": "Summer — Growth",
+      "months": [6,7,8],
+      "colorFrom": "#FFF7ED",
+      "colorTo": "#0b1220",
+      "ambientBoost": 0.08,
+      "description": "Strength, brightness, steady work."
+    },
+    {
+      "id": "autumn",
+      "name": "Autumn — Release",
+      "months": [9,10,11],
+      "colorFrom": "#FFF1F2",
+      "colorTo": "#0b0f17",
+      "ambientBoost": 0.06,
+      "description": "Release, reflection, harvesting lessons."
+    },
+    {
+      "id": "winter",
+      "name": "Winter — Stillness",
+      "months": [12,1,2],
+      "colorFrom": "#F8FAFC",
+      "colorTo": "#030409",
+      "ambientBoost": 0.12,
+      "description": "Quiet, waiting, deep peace."
+    }
+  ],
+  "seasonalWhispers": {
+    "spring": [
+      "A small green promise grows within you.",
+      "Let the thaw of mercy warm your truth."
+    ],
+    "summer": [
+      "Tend what grows—your courage will fruit.",
+      "Sunlit patience brings steady strength."
+    ],
+    "autumn": [
+      "Lay down what no longer serves; harvest your wisdom.",
+      "Leaves fall so the roots may breathe."
+    ],
+    "winter": [
+      "In the hush, God's hand steadies the heart.",
+      "Quiet waters restore the worn soul."
+    ]
+  }
+}

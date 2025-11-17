@@ -1,0 +1,42 @@
+"use client";
+import React from "react";
+import { useModal } from "./ModalRoot";
+
+const TABS = [
+  { id: "stories", label: "Stories" },
+  { id: "rituals", label: "Rituals" },
+  { id: "journal", label: "Journal" },
+  { id: "covenant", label: "Covenant" },
+  { id: "memory", label: "Memory" },
+  { id: "blessings", label: "Blessings" },
+  { id: "badges", label: "Badges" },
+  { id: "ascension", label: "Ascension" },
+];
+
+export default function TabBar() {
+  const { open, active } = useModal();
+
+  return (
+    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60]">
+      <nav className="flex gap-2 items-center bg-black/30 border border-white/10 rounded-full px-4 py-2 backdrop-blur-md shadow-xl">
+        {TABS.map((t) => {
+          const isActive = active === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => open(t.id)}
+              aria-label={t.label}
+              className={`text-xxs px-3 py-1 rounded-full transition-all select-none ${
+                isActive
+                  ? "bg-amber-400/25 text-amber-200 ring-1 ring-amber-300/30"
+                  : "text-white/70 hover:bg-white/10"
+              }`}
+            >
+              {t.label}
+            </button>
+          );
+        })}
+      </nav>
+    </div>
+  );
+}

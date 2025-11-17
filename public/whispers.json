@@ -1,0 +1,14 @@
+{
+  "whispers": [
+    { "text": "Rest, Traventurer. The fire has waited for you.", "rarity": "common", "tags": ["rest"] },
+    { "text": "Even the strongest sword was once raw ore.", "rarity": "common", "tags": ["encourage"] },
+    { "text": "You are not late — you ripen quietly under God's watch.", "rarity": "rare", "tags": ["faith"] },
+    { "text": "When the night is deepest, listen: the Lord steadies your breath.", "rarity": "divine", "tags": ["divine"] },
+    { "text": "Some nights, silence speaks louder than any gain.", "rarity": "common", "tags": ["silence"] }
+  ],
+  "weights": {
+    "common": 70,
+    "rare": 25,
+    "divine": 5
+  }
+}
