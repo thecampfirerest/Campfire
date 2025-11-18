@@ -1,6 +1,7 @@
 // /lib/rituals.ts
-import { loadMemory, saveMemory, grantBadge } from "@/lib/memoryClient";
-import { addWarmth } from "@/lib/innerWarmth";
+import { loadMemory, saveMemory } from "./memoryClient";
+import { addWarmth } from "./innerWarmth";
+import { evaluateBlessings } from "./blessings";
 
 type RitualDef = {
   id: string;
@@ -32,21 +33,16 @@ export function canPerform(ritual: RitualDef): boolean {
 }
 
 export function performRitual(ritual: RitualDef, payload?: any) {
-  // record performed At
   saveMemory(`ritual_last_${ritual.id}`, new Date().toISOString());
 
-  // add to ritual history
   const hist = loadMemory<any[]>("ritual_history") ?? [];
   hist.unshift({ id: ritual.id, at: new Date().toISOString(), payload });
   saveMemory("ritual_history", hist.slice(0, 200));
 
-  // add warmth
   if (ritual.warmth) addWarmth(ritual.warmth);
 
-  // badges for milestones
-  if (ritual.id === "gratitude_list") grantBadge("GratefulHeart");
-  if (ritual.id === "burden_release") grantBadge("Lightened");
+  // Evaluate blessings after rituals (progression)
+  try { evaluateBlessings(); } catch {}
 
-  // return a simple result
   return { ok: true };
 }

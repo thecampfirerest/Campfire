@@ -1,32 +1,37 @@
 "use client";
 
 import Campfire from "@/components/Campfire";
-import AmbientAudio from "@/components/AmbientAudio";
-import Embers from "@/components/Embers";
-import TravBadge from "@/components/TravBadge";
-
 import { ModalProvider } from "@/components/ModalRoot";
+import CompassBubble from "@/components/CompassBubble";
+import WelcomeBanner from "@/components/WelcomeBanner";
+import AutoGuidance from "@/components/AutoGuidance";
+import TravBadge from "@/components/TravBadge";
 import TabBar from "@/components/TabBar";
 
-export default function Home() {
-  const hour = new Date().getHours();
-  const night = hour >= 22 || hour < 5;
+export default function Page() {
   return (
     <ModalProvider>
-      <div
-        className={`relative w-screen h-screen overflow-hidden flex items-center justify-center transition-all duration-700 ${
-          night ? "bg-gradient-to-b from-[#0a0210] to-black" : "bg-black"
-        }`}
-      >
-        <AmbientAudio />
-        <Embers />
+      {/* Welcome message */}
+      <WelcomeBanner />
 
-        <Campfire />
+      {/* Auto-whisper engine */}
+      <AutoGuidance />
 
-        <TravBadge />
+      {/* Traventurer badge */}
+      <TravBadge />
 
+      {/* Top navigation */}
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-40">
         <TabBar />
       </div>
+
+      {/* Center campfire */}
+      <div className="flex items-center justify-center min-h-screen">
+        <Campfire />
+      </div>
+
+      {/* Compass Codex */}
+      <CompassBubble />
     </ModalProvider>
   );
 }

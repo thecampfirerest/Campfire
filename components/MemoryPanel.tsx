@@ -1,34 +1,50 @@
 "use client";
-import { useEffect, useState } from "react";
-import { listMemoryKeys, loadMemory } from "@/lib/memoryClient";
+import React, { useEffect, useState } from "react";
+import { loadMemory, saveMemory } from "@/lib/memoryClient";
 
 export default function MemoryPanel() {
-  const [keys, setKeys] = useState<string[]>([]);
-  const [last, setLast] = useState<any>(null);
+  const [memories, setMemories] = useState<any[]>(() => loadMemory("memories") ?? []);
+  const [index, setIndex] = useState(0);
+  const last = loadMemory("last_whisper") ?? null;
 
-  useEffect(() => {
-    setKeys(listMemoryKeys());
-    setLast(loadMemory("last_whisper"));
-  }, []);
+  useEffect(() => { setMemories(loadMemory("memories") ?? []); }, []);
+
+  function saveCurrent() {
+    if (!last) return;
+    const m = loadMemory("memories") ?? [];
+    m.unshift({ ...last, savedAt: new Date().toISOString() });
+    saveMemory("memories", m.slice(0, 200));
+    setMemories(m.slice(0, 200));
+    setIndex(0);
+  }
+  function next() { setIndex((i) => Math.min(memories.length - 1, i + 1)); }
+  function prev() { setIndex((i) => Math.max(0, i - 1)); }
+  const current = memories[index];
 
   return (
-    <div className="text-sm text-white space-y-3">
-      <div className="text-xs text-white/60">Keys: {keys.length}</div>
+    <div className="space-y-3 text-white text-sm">
+      <div className="flex items-center justify-between">
+        <div className="font-semibold">Memory</div>
+        <div className="text-xs text-white/60">Keys: {memories.length}</div>
+      </div>
 
-      {last ? (
-        <div className="bg-black/20 p-3 rounded">
-          <div className="text-xs text-white/60">Last whisper</div>
-          <div className="mt-1">
-            <div className="font-medium text-amber-200">{last.text}</div>
-            <div className="text-xxs text-white/60 mt-1">Rarity: {last.rarity ?? "common"}</div>
-            <div className="text-xxs text-white/60">
-              Time: {last.at ? new Date(last.at).toLocaleString() : "—"}
-            </div>
+      <div className="bg-white/3 p-3 rounded min-h-[140px]">
+        {current ? (
+          <div>
+            <div className="text-xs text-white/60 mb-2">Saved: {current.savedAt ?? current.at}</div>
+            <div className="whitespace-pre-wrap">{current.text ?? JSON.stringify(current)}</div>
           </div>
-        </div>
-      ) : (
-        <div className="text-white/50">No memory recorded yet.</div>
-      )}
+        ) : (
+          <div className="text-white/70">No saved memories. Save last whisper to keep it.</div>
+        )}
+      </div>
+
+      <div className="flex gap-2">
+        <button onClick={prev} className="px-3 py-1 bg-white/6 rounded" disabled={index === 0}>◀ Prev</button>
+        <button onClick={next} className="px-3 py-1 bg-white/6 rounded" disabled={index >= Math.max(0, memories.length - 1)}>Next ▶</button>
+        <div className="flex-1" />
+        <button onClick={saveCurrent} className="px-3 py-1 bg-amber-600/30 rounded" disabled={!last}>Save Last Whisper</button>
+      </div>
     </div>
   );
 }

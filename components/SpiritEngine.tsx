@@ -1,10 +1,8 @@
 "use client";
-
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Howl } from "howler";
 
 type Whisper = { text: string; rarity?: string; tags?: string[] };
-type Weights = { [k: string]: number };
 
 function weightedPick<T>(items: T[], getWeight: (i: T) => number) {
   const total = items.reduce((s, it) => s + getWeight(it), 0);
@@ -17,103 +15,85 @@ function weightedPick<T>(items: T[], getWeight: (i: T) => number) {
   return items[0];
 }
 
-// Simple local templates for fallback
-function localGenerate(seedTag?: string) {
-  if (seedTag === "divine") {
-    return "The Lord steadies your steps in the quiet hours.";
-  }
-  const templates = [
-    "The ember remembers what the cold cannot keep.",
-    "Breathe slowly; tomorrow will still be there.",
-    "A single gentle choice tonight becomes a bright path."
+function localFallback() {
+  const arr = [
+    "Patience shapes the best trades.",
+    "The ember whispers: guard your heart from haste.",
+    "Rest more than you react; wisdom grows in stillness.",
   ];
-  return templates[Math.floor(Math.random() * templates.length)];
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export default function SpiritEngine({
-  faithMode = false,
-  onWhisper,
-}: {
-  faithMode?: boolean;
-  onWhisper?: (w: Whisper) => void;
-}) {
+export default function SpiritEngine({ onWhisper }: { onWhisper?: (w: Whisper) => void }) {
   const [whispers, setWhispers] = useState<Whisper[]>([]);
-  const [weights, setWeights] = useState<Weights>({});
+  const [weights, setWeights] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(false);
-  const lastCallAt = useRef<number | null>(null);
+  const [coolUntil, setCoolUntil] = useState<number | null>(null);
   const chime = useRef<Howl | null>(null);
+  const [remaining, setRemaining] = useState(0);
 
   useEffect(() => {
-    chime.current = new Howl({ src: ["/divine_chime.mp3"], volume: 0.32 });
-    fetch("/whispers.json")
-      .then((r) => r.json())
-      .then((data) => {
-        setWhispers(data.whispers || []);
-        setWeights(data.weights || { common: 70, rare: 25, divine: 5 });
-      })
-      .catch(() => {
-        setWhispers([]);
-        setWeights({ common: 70, rare: 25, divine: 5 });
-      });
+    chime.current = new Howl({ src: ["/divine_chime.mp3"], volume: 0.34 });
+    fetch("/whispers.json").then(r => r.json()).then(j => {
+      setWhispers(j.whispers ?? []);
+      setWeights(j.weights ?? { common: 70, rare: 25, divine: 5 });
+    }).catch(() => {
+      setWhispers([]);
+      setWeights({ common: 70, rare: 25, divine: 5 });
+    });
   }, []);
 
-  // Client-side cooldown to prevent accidental loops / double-click spamming
-  const CAN_CALL_MS = 2500; // 2.5s between requests
-
-  async function pickWhisper() {
-    const now = Date.now();
-    if (lastCallAt.current && now - lastCallAt.current < CAN_CALL_MS) return;
-    lastCallAt.current = now;
-
-    if (!whispers.length) {
-      const fallback = localGenerate();
-      onWhisper?.({ text: fallback, rarity: "common" });
-      return;
+  useEffect(() => {
+    let t: number | null = null;
+    if (coolUntil) {
+      t = window.setInterval(() => {
+        const rem = Math.max(0, Math.ceil((coolUntil - Date.now()) / 1000));
+        setRemaining(rem);
+        if (rem <= 0) {
+          setCoolUntil(null);
+          setRemaining(0);
+          if (t) clearInterval(t);
+        }
+      }, 250);
     }
+    return () => { if (t) clearInterval(t); };
+  }, [coolUntil]);
 
-    const pool = whispers.filter((w) => (faithMode ? true : w.rarity !== "divine"));
-    const pick = weightedPick(pool, (w) => weights[w.rarity ?? "common"]);
+  async function callSpirit() {
+    if (coolUntil && Date.now() < coolUntil) return;
+    const chosen = whispers.length ? weightedPick(whispers, (w) => weights[w.rarity ?? "common"]) : { text: localFallback(), rarity: "common" };
 
-    const shouldGenerate = pick.rarity === "divine" || Math.random() < 0.12;
-
-    if (!shouldGenerate) {
-      if (pick.rarity === "divine") chime.current?.play();
-      onWhisper?.(pick);
+    if (!chosen.rarity || chosen.rarity === "common") {
+      onWhisper?.({ text: chosen.text ?? localFallback(), rarity: "common" });
       return;
     }
 
     setLoading(true);
     try {
-      // Only call AI if server is configured (server will self-check as well)
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ seedTag: pick.tags?.[0] }),
-      });
-
-      if (!res.ok) throw new Error("AI unavailable");
-      const json = await res.json();
-      const text = json.text?.trim() ?? localGenerate(pick.tags?.[0]);
-      if (pick.rarity === "divine") chime.current?.play();
-      onWhisper?.({ text, rarity: pick.rarity, tags: pick.tags });
-    } catch {
-      const local = localGenerate(pick.tags?.[0]);
-      if (pick.rarity === "divine") chime.current?.play();
-      onWhisper?.({ text: local, rarity: pick.rarity, tags: pick.tags });
+      if (chosen.rarity === "rare") {
+        // call rare endpoint
+        const res = await fetch("/api/generate-rare", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ seed: chosen.tags?.[0] ?? "trading" }) });
+        const j = await res.json();
+        onWhisper?.({ text: j.text ?? j.story ?? localFallback(), rarity: "rare" });
+      } else {
+        chime.current?.play();
+        const res = await fetch("/api/generate-divine", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ seed: chosen.tags?.[0] ?? "destiny" }) });
+        const j = await res.json();
+        onWhisper?.({ text: j.text ?? j.story ?? localFallback(), rarity: "divine" });
+      }
+    } catch (e) {
+      onWhisper?.({ text: localFallback(), rarity: "common" });
+      console.warn("spirit call failed", e);
     } finally {
       setLoading(false);
+      setCoolUntil(Date.now() + 10000);
+      setRemaining(10);
     }
   }
 
   return (
-    <div className="flex flex-col items-center gap-3 z-30">
-      <button
-        onClick={pickWhisper}
-        disabled={loading}
-        className="px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-lg transition shadow-md text-sm"
-      >
-        {loading ? "…breathing…" : "Call the Spirit"}
-      </button>
-    </div>
+    <button onClick={callSpirit} disabled={loading || !!coolUntil} className="px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition text-sm disabled:opacity-60">
+      {loading ? "Listening..." : coolUntil ? `Cooling (${remaining}s)` : "Call the Spirit"}
+    </button>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useModal } from "./ModalRoot";
+import { useModal } from "@/components/ModalRoot";
 
 const TABS = [
   { id: "stories", label: "Stories" },
@@ -14,13 +14,13 @@ const TABS = [
 ];
 
 export default function TabBar() {
-  const { open, active } = useModal();
+  const { open, modal } = useModal();
 
   return (
     <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60]">
       <nav className="flex gap-2 items-center bg-black/30 border border-white/10 rounded-full px-4 py-2 backdrop-blur-md shadow-xl">
         {TABS.map((t) => {
-          const isActive = active === t.id;
+          const isActive = modal === t.id;
           return (
             <button
               key={t.id}
