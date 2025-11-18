@@ -1,30 +1,32 @@
 "use client";
-import React, { useEffect, useState } from "react";
-
-function loadNumber(key: string) { try { return Number(localStorage.getItem(key) ?? "0"); } catch { return 0; } }
+import { useEffect, useState } from "react";
+import { loadMemory } from "@/lib/memoryClient";
 
 export default function TravBadge() {
-  const [name, setName] = useState(localStorage.getItem("traventurer_name") ?? "Traventurer");
-  const [rest, setRest] = useState(loadNumber("rest_count"));
-  const [warmth, setWarmth] = useState(loadNumber("inner_warmth"));
+  const [name, setName] = useState("Traventurer");
+  const [rest, setRest] = useState(0);
+  const [warmth, setWarmth] = useState(0);
 
   useEffect(() => {
-    function onRest() { setRest(loadNumber("rest_count")); }
-    function onWarmth() { setWarmth(loadNumber("inner_warmth")); }
-    window.addEventListener("rest:update", onRest);
-    window.addEventListener("warmth:update", onWarmth);
-    return () => { window.removeEventListener("rest:update", onRest); window.removeEventListener("warmth:update", onWarmth); };
+    if (typeof window !== "undefined") {
+      // name
+      const storedName = localStorage.getItem("traventurer_name");
+      if (storedName) setName(storedName);
+
+      // using your existing memory system
+      const storedRest = loadMemory("rest_count");
+      const storedWarmth = loadMemory("inner_warmth");
+
+      if (typeof storedRest === "number") setRest(storedRest);
+      if (typeof storedWarmth === "number") setWarmth(storedWarmth);
+    }
   }, []);
 
   return (
-    <div className="fixed top-4 left-4 z-40 bg-black/40 border border-white/10 px-4 py-3 rounded-xl backdrop-blur-lg text-white/80 text-sm shadow-md">
-      <div className="uppercase text-[10px] tracking-wide opacity-50 mb-1">Traventurer</div>
-      <div className="text-lg font-semibold">{name}</div>
-      <div className="opacity-70 mt-1 text-xs">Rests: {rest}</div>
-      <div className="opacity-70 mt-1 text-xs">Warmth: {warmth}</div>
-      <div className="mt-2">
-        <button onClick={() => { const n = prompt("Name?"); if (n) { localStorage.setItem("traventurer_name", n); setName(n); } }} className="px-3 py-1 rounded bg-white/10 hover:bg-white/20 text-xs">Edit</button>
-      </div>
+    <div className="text-white/70 text-xs p-3 border rounded-xl bg-black/20 w-32">
+      <div className="font-semibold text-white">{name}</div>
+      <div>Rests: {rest}</div>
+      <div>Warmth: {warmth}</div>
     </div>
   );
 }

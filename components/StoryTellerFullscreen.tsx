@@ -10,7 +10,9 @@ export default function StoryTellerFullscreen({ onClose }: { onClose: () => void
     { title: "The Quiet Flame", story: "The fire glowed softly as night settled." },
   ];
 
+  // load stored history (may be empty)
   const stored = (loadMemory("story_history") as StoryEntry[] | null) ?? [];
+  // combine: builtins first (read-only), then history after them
   const [stories, setStories] = useState<StoryEntry[]>([...builtin, ...stored]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -24,30 +26,52 @@ export default function StoryTellerFullscreen({ onClose }: { onClose: () => void
   const current = stories[index] ?? { title: "Untold Tale", story: "The embers hush." };
 
   function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(null), 2200); }
-  function next() { setIndex((i) => (i + 1) % stories.length); }
-  function prev() { setIndex((i) => (i - 1 + stories.length) % stories.length); }
+  function next() { setIndex((i) => Math.min(stories.length - 1, i + 1)); }
+  function prev() { setIndex((i) => Math.max(0, i - 1)); }
 
   async function generateNew() {
     if (loading) return;
     setLoading(true);
+
     try {
-      const res = await fetch("/api/story", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ seed: "campfire healing tale" }) });
+      const res = await fetch("/api/story", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ seed: "campfire healing tale" }),
+      });
+
+      if (!res.ok) throw new Error("story endpoint failed");
+
       const j = await res.json();
-      const entry: StoryEntry = { title: j.title ?? "A New Tale", story: j.story ?? j.text ?? "A small tale.", at: new Date().toISOString(), divine: !!j.divine };
-      const newStories = [...stories.slice(0, builtin.length), entry, ...stories.slice(builtin.length)];
-      setStories(newStories);
+      const entry: StoryEntry = {
+        title: (j.title ?? "A New Tale").trim(),
+        story: (j.story ?? j.text ?? "A small tale.").trim(),
+        at: new Date().toISOString(),
+        divine: !!j.divine,
+      };
+
+      // Prepend entry into stored history and into UI right after builtins.
       const hist = (loadMemory("story_history") as StoryEntry[] | null) ?? [];
-      saveMemory("story_history", [entry, ...hist].slice(0, 200));
+      const newHist = [entry, ...hist].slice(0, 200);
+      saveMemory("story_history", newHist);
+
+      // New story list: builtins + newHist
+      const newStories = [...builtin, ...newHist];
+      setStories(newStories);
+
+      // SHOW the newly created story (index = builtin.length i.e. first stored)
       setIndex(builtin.length);
+
       showToast("New story generated.");
     } catch (e) {
-      console.error(e);
-      showToast("Failed to generate — fallback used.");
+      console.error("generateNew error:", e);
+      showToast("Failed to generate — fallback saved.");
       const entry = { title: "A New Tale", story: "The wind carries a small tale the fire remembers.", at: new Date().toISOString() };
-      const newStories = [...stories.slice(0, builtin.length), entry, ...stories.slice(builtin.length)];
-      setStories(newStories);
       const hist = (loadMemory("story_history") as StoryEntry[] | null) ?? [];
-      saveMemory("story_history", [entry, ...hist].slice(0, 200));
+      const newHist = [entry, ...hist].slice(0, 200);
+      saveMemory("story_history", newHist);
+      const newStories = [...builtin, ...newHist];
+      setStories(newStories);
       setIndex(builtin.length);
     } finally {
       setLoading(false);
@@ -72,6 +96,7 @@ export default function StoryTellerFullscreen({ onClose }: { onClose: () => void
         </div>
         {toast && <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 px-3 py-2 rounded text-sm">{toast}</div>}
       </div>
+
       <style>{`
         .divine-particles {
           position: absolute;
@@ -85,9 +110,9 @@ export default function StoryTellerFullscreen({ onClose }: { onClose: () => void
           animation: divineGlow 6s ease-in-out infinite;
         }
         @keyframes divineGlow {
-          0% { filter: blur(6px) saturate(80%); opacity: 0.7; transform: scale(1);}
-          50% { filter: blur(18px) saturate(120%); opacity: 1; transform: scale(1.02);}
-          100% { filter: blur(6px) saturate(80%); opacity: 0.72; transform: scale(1);}
+          0% { filter: blur(6px) saturate(80%); opacity: 0.7; transform: scale(1); }
+          50% { filter: blur(18px) saturate(120%); opacity: 1; transform: scale(1.02); }
+          100% { filter: blur(6px) saturate(80%); opacity: 0.72; transform: scale(1); }
         }
       `}</style>
     </div>

@@ -109,10 +109,10 @@ export default function Campfire() {
       setProcessingAuto(true);
 
       try {
-        const res = await fetch("/api/generate", {
+        const res = await fetch("/api/generate-rare", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ seedTag: "auto" }),
+          body: JSON.stringify({ seed: "auto" }),
         });
         if (!res.ok) throw new Error();
 
