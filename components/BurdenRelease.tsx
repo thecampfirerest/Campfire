@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Howl } from "howler";
+import { performRitual } from "@/lib/rituals";
 
-export default function BurdenRelease({ onRelease }: { onRelease?: () => void }) {
+export default function BurdenRelease() {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
 
@@ -12,42 +13,62 @@ export default function BurdenRelease({ onRelease }: { onRelease?: () => void })
     volume: 0.45,
   });
 
+  useEffect(() => {
+    function openFromRitual() {
+      window.dispatchEvent(new Event("close:modal"));
+      setTimeout(() => setOpen(true), 50);
+    }
+
+    window.addEventListener("open:burden", openFromRitual);
+    return () => window.removeEventListener("open:burden", openFromRitual);
+  }, []);
+
   function confirmRelease() {
     if (!text.trim()) return;
 
-    fire.play();
+    try {
+      fire.play();
+    } catch {}
+
     setTimeout(() => {
-      onRelease?.();
+      performRitual(
+        { id: "burden_release", cooldownHours: 24, title: "Burden Release", warmth: 2 },
+        { burden: text }
+      );
+
+      window.dispatchEvent(
+        new CustomEvent("burden:released", { detail: { text } })
+      );
+
       setText("");
       setOpen(false);
-    }, 350);
+    }, 380);
   }
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="px-4 py-2 bg-red-600/40 hover:bg-red-600/60 rounded text-sm border border-white/10"
-      >
-        Release Burden
-      </button>
-
       {open && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[200]">
-          <div className="bg-black/50 p-5 rounded-xl border border-white/10 max-w-xs w-full">
+        <div className="fixed inset-0 bg-black/70 z-[220] flex items-center justify-center">
+          <div className="bg-black/50 p-5 border border-white/10 rounded-xl max-w-xs w-full">
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="w-full h-28 bg-black/30 border border-white/20 text-white p-2 rounded text-sm"
+              className="w-full h-28 bg-black/30 border border-white/20 rounded p-2 text-white"
               placeholder="Lay down your burden…"
             />
 
             <div className="flex justify-between mt-3">
-              <button onClick={() => setOpen(false)} className="px-3 py-1 bg-white/10 rounded">
+              <button
+                onClick={() => setOpen(false)}
+                className="px-3 py-1 bg-white/10 rounded"
+              >
                 Cancel
               </button>
 
-              <button onClick={confirmRelease} className="px-3 py-1 bg-red-500/40 rounded">
+              <button
+                onClick={confirmRelease}
+                className="px-3 py-1 bg-red-500/40 rounded"
+              >
                 Burn
               </button>
             </div>

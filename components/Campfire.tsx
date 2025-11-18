@@ -166,10 +166,27 @@ export default function Campfire() {
         </motion.div>
 
         <div className="flex gap-3 items-center">
-          <RestButton />
-          <SpiritEngine onWhisper={(w) => receiveWhisper(w.text, w.rarity ?? "common", w.tags)} />
-          <BurdenRelease onRelease={() => receiveWhisper("The fire accepts what you release.", "rare")} />
-        </div>
+  <RestButton />
+
+  {/* Call the Spirit (SpiritEngine) */}
+  <SpiritEngine
+    onWhisper={(w) =>
+      receiveWhisper(w.text, w.rarity ?? "common", w.tags)
+    }
+  />
+
+  {/* 🔥 Burden Release restored */}
+  <BurdenRelease
+    onRelease={() =>
+      receiveWhisper(
+        "The fire accepts what you release.",
+        "rare"
+      )
+    }
+  />
+</div>
+
+
       </div>
     </>
   );

@@ -11,6 +11,7 @@ export default function AmbientAudio() {
   const fireRef = useRef<Howl | null>(null);
   const windRef = useRef<Howl | null>(null);
   const divineRef = useRef<Howl | null>(null);
+  const ritualRef = useRef<Howl | null>(null);
 
   const [muted, setMuted] = useState<boolean>(() => {
     try {
@@ -36,6 +37,13 @@ export default function AmbientAudio() {
       preload: true,
     });
 
+    ritualRef.current = new Howl({
+      src: ["/ritual_chime.mp3"],
+      loop: false,
+      volume: 0.6,
+      preload: true,
+    });
+
     windRef.current = new Howl({
       src: ["/forest-wind.mp3"],
       loop: true,
@@ -53,6 +61,14 @@ export default function AmbientAudio() {
     // attach a global helper so other components can trigger divine chime
     // e.g. window.playDivineChime?.()
     // keep it idempotent
+
+    (window as any).playRitualChime = () => {
+        if (!muted) {
+        ritualRef.current?.stop();
+        ritualRef.current?.play();
+      }
+    };
+
     (window as any).playDivineChime = () => {
       try {
         if (muted) return;

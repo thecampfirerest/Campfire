@@ -31,6 +31,16 @@ export default function RestButton() {
     return () => { if (t) clearInterval(t); };
   }, [coolUntil]);
 
+  // Listen for ritual-triggered rest (opened from RitualsPanel)
+  useEffect(() => {
+    function triggerRest() {
+      doRest();
+    }
+    window.addEventListener("open:rest", triggerRest);
+    return () => window.removeEventListener("open:rest", triggerRest);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function doRest() {
     if (coolUntil && Date.now() < coolUntil) return;
     const prev = loadNumber("rest_count");

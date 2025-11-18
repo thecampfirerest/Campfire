@@ -11,7 +11,6 @@ export default function TravBadge() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-
       const storedName = localStorage.getItem("traventurer_name");
       if (storedName) setName(storedName);
 
@@ -21,6 +20,28 @@ export default function TravBadge() {
       if (typeof storedRest === "number") setRest(storedRest);
       if (typeof storedWarmth === "number") setWarmth(storedWarmth);
     }
+
+    // 🔥 Listen for live Rest updates
+    function onRest(e: any) {
+      if (e.detail?.restCount !== undefined) {
+        setRest(e.detail.restCount);
+      }
+    }
+
+    // 🔥 Listen for live Warmth updates
+    function onWarmth(e: any) {
+      if (e.detail?.warmth !== undefined) {
+        setWarmth(e.detail.warmth);
+      }
+    }
+
+    window.addEventListener("rest:update", onRest);
+    window.addEventListener("warmth:update", onWarmth);
+
+    return () => {
+      window.removeEventListener("rest:update", onRest);
+      window.removeEventListener("warmth:update", onWarmth);
+    };
   }, []);
 
   function saveName() {
@@ -34,9 +55,7 @@ export default function TravBadge() {
       {/* NAME + EDIT BUTTON */}
       <div className="flex justify-between items-center mb-1">
         <div className="font-semibold text-white">
-          {name?.trim()
-            ? `Traventurer ${name.trim()}`
-            : "Traventurer"}
+          {name?.trim() ? `Traventurer ${name.trim()}` : "Traventurer"}
         </div>
 
         <button
