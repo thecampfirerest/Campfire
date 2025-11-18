@@ -69,9 +69,10 @@ export default function AmbientAudio() {
 
       // only play if not muted
       if (!muted) {
-        ambientRef.current?.play().catch(() => {});
-        fireRef.current?.play().catch(() => {});
-        windRef.current?.play().catch(() => {});
+        // NOTE: Howler.play() does not return a Promise — do not call .catch on it.
+        ambientRef.current?.play();
+        fireRef.current?.play();
+        windRef.current?.play();
       }
     }
 
