@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Howl } from "howler";
 
 // ----------------------------------
-// TypedWhisper Component
+// Typed Whisper – used only internally for typing out AI responses
 // ----------------------------------
 function TypedWhisper({ text }: { text: string }) {
   const [out, setOut] = useState("");
@@ -39,11 +39,10 @@ function TypedWhisper({ text }: { text: string }) {
         } catch {}
       }
 
-      const delay = ch === " " ? 35 : 65;
-      timer.current = window.setTimeout(step, delay);
+      timer.current = window.setTimeout(step, ch === " " ? 35 : 65);
     }
 
-    timer.current = window.setTimeout(step, 300);
+    timer.current = window.setTimeout(step, 200);
 
     return () => {
       if (timer.current) clearTimeout(timer.current);
@@ -54,9 +53,6 @@ function TypedWhisper({ text }: { text: string }) {
   return <span>{out}</span>;
 }
 
-// ----------------------------------
-// Main SpiritEngine Component
-// ----------------------------------
 type Whisper = { text: string; rarity?: string; tags?: string[] };
 
 export default function SpiritEngine({
@@ -67,8 +63,6 @@ export default function SpiritEngine({
   const [loading, setLoading] = useState(false);
   const [coolUntil, setCoolUntil] = useState<number | null>(null);
   const [remaining, setRemaining] = useState(0);
-
-  const [typedText, setTypedText] = useState(""); // NEW
 
   useEffect(() => {
     let t: number | null = null;
@@ -94,32 +88,21 @@ export default function SpiritEngine({
     setLoading(true);
 
     try {
-      // 20% divine → call divine endpoint
-      const divineChance = Math.random() < 0.2;
-      const endpoint = divineChance
-        ? "/api/generate-divine"
-        : "/api/generate-rare";
-
-      const res = await fetch(endpoint, {
+      const divine = Math.random() < 0.2;
+      const res = await fetch(divine ? "/api/generate-divine" : "/api/generate-rare", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ seed: "wisdom" }),
+        body: JSON.stringify({ seed: "guidance" }),
       });
 
       const j = await res.json();
       const text = j.text ?? "The ember glows softly for you.";
-      const rarity = divineChance ? "divine" : "rare";
+      const rarity = divine ? "divine" : "rare";
 
-      // Send to Campfire
+      // Send typed whisper to Campfire (which handles display)
       onWhisper?.({ text, rarity });
-
-      // Local typed display
-      setTypedText(text);
-    } catch (err) {
-      console.error("SpiritEngine error:", err);
-      const fallback = "The ember glows softly for you.";
-      onWhisper?.({ text: fallback, rarity: "common" });
-      setTypedText(fallback);
+    } catch {
+      onWhisper?.({ text: "The ember glows softly for you.", rarity: "common" });
     } finally {
       setLoading(false);
       setCoolUntil(Date.now() + 10000);
@@ -128,25 +111,12 @@ export default function SpiritEngine({
   }
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <button
-        onClick={callSpirit}
-        disabled={loading || !!coolUntil}
-        className="px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition text-sm disabled:opacity-60"
-      >
-        {loading
-          ? "Listening..."
-          : coolUntil
-          ? `Cooling (${remaining}s)`
-          : "Call the Spirit"}
-      </button>
-
-      {/* TYPED WHISPER BELOW BUTTON */}
-      {typedText && (
-        <div className="mt-1 text-center text-sm text-amber-200 italic max-w-xs">
-          <TypedWhisper text={typedText} />
-        </div>
-      )}
-    </div>
+    <button
+      onClick={callSpirit}
+      disabled={loading || !!coolUntil}
+      className="px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition text-sm disabled:opacity-50"
+    >
+      {loading ? "Listening..." : coolUntil ? `Cooling (${remaining}s)` : "Call the Spirit"}
+    </button>
   );
 }

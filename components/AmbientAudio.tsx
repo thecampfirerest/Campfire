@@ -1,49 +1,41 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import { useEffect, useRef, useState } from "react";
 import { Howl } from "howler";
 
-// GLOBAL SINGLETON
-let ambient: Howl | null = null;
-let initialized = false;
-
 export default function AmbientAudio() {
-  const [muted, setMuted] = useState(false);
+  const started = useRef(false);
+
+  const fire = useRef<Howl | null>(null);
+  const wind = useRef<Howl | null>(null);
 
   useEffect(() => {
-    if (!initialized) {
-      initialized = true;
+    fire.current = new Howl({
+      src: ["/fire.mp3"],
+      loop: true,
+      volume: 0.3,
+    });
 
-      ambient = new Howl({
-        src: ["/ambient.mp3"],
-        loop: true,
-        volume: 0.18,
-        html5: true,
-      });
+    wind.current = new Howl({
+      src: ["/forest_wind.mp3"],
+      loop: true,
+      volume: 0.25,
+    });
 
-      // Start only once
-      const start = () => {
-        try {
-          if (ambient && !ambient.playing()) ambient.play();
-        } catch {}
-      };
+    function startAudio() {
+      if (started.current) return;
+      started.current = true;
 
-      window.addEventListener("click", start, { once: true });
-      setTimeout(start, 1000);
+      fire.current?.play();
+      wind.current?.play();
     }
+
+    window.addEventListener("click", startAudio);
+
+    return () => {
+      window.removeEventListener("click", startAudio);
+    };
   }, []);
 
-  useEffect(() => {
-    if (!ambient) return;
-    ambient.mute(muted);
-  }, [muted]);
-
-  return (
-    <button
-      onClick={() => setMuted((m) => !m)}
-      className="fixed top-6 right-6 z-60 w-12 h-12 rounded-full bg-black/40 border border-white/10 flex items-center justify-center shadow-lg"
-      title={muted ? "Unmute" : "Mute"}
-    >
-      {muted ? "🔇" : "🔊"}
-    </button>
-  );
+  return null;
 }
