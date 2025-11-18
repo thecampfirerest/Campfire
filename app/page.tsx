@@ -17,12 +17,21 @@ export default function Page() {
       {/* Auto-whisper engine */}
       <AutoGuidance />
 
-      {/* Traventurer badge */}
-      <TravBadge />
+      {/* FIXED TOP BAR: Profile + Tabs perfectly middle-aligned */}
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full flex items-center justify-left">
+        <div className="flex items-center gap-10">
 
-      {/* Top navigation */}
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-40">
-        <TabBar />
+          {/* Profile */}
+          <div className="flex items-center">
+            <TravBadge />
+          </div>
+
+          {/* Tabs */}
+          <div className="flex items-center">
+            <TabBar />
+          </div>
+
+        </div>
       </div>
 
       {/* Center campfire */}
@@ -30,7 +39,7 @@ export default function Page() {
         <Campfire />
       </div>
 
-      {/* Compass Codex */}
+      {/* Compass bubble */}
       <CompassBubble />
     </ModalProvider>
   );

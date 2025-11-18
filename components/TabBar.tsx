@@ -18,7 +18,17 @@ export default function TabBar() {
 
   return (
     <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60]">
-      <nav className="flex gap-2 items-center bg-black/30 border border-white/10 rounded-full px-4 py-2 backdrop-blur-md shadow-xl">
+      <nav
+  className="
+    flex gap-2 items-center 
+    bg-black/30 border border-white/10 rounded-full 
+    px-4 py-2 backdrop-blur-md shadow-xl
+
+    overflow-x-auto whitespace-nowrap
+    scrollbar-hide
+    max-w-[90vw]
+  "
+>
         {TABS.map((t) => {
           const isActive = modal === t.id;
           return (

@@ -107,7 +107,7 @@ export default function AmbientAudio() {
         aria-label={muted ? "Unmute site audio" : "Mute site audio"}
         title={muted ? "Unmute" : "Mute"}
         onClick={() => setMuted((s) => !s)}
-        className="fixed right-4 top-4 z-[90] w-10 h-10 rounded-full bg-black/60 border border-white/10 flex items-center justify-center shadow-lg"
+        className="fixed right-4 top-12 z-[90] w-10 h-10 rounded-full bg-black/60 border border-white/10 flex items-center justify-center shadow-lg"
       >
         <span style={{ fontSize: 16 }}>{muted ? "🔇" : "🔊"}</span>
       </button>
