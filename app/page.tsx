@@ -17,20 +17,24 @@ export default function Page() {
       {/* Auto-whisper engine */}
       <AutoGuidance />
 
-      {/* FIXED TOP BAR: Profile + Tabs perfectly middle-aligned */}
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full flex items-center justify-left">
-        <div className="flex items-center gap-10">
+      {/* TOP SECTION – Responsive */}
+      <div
+        className="
+          fixed top-4 left-1/2 -translate-x-1/2 z-50
+          w-full max-w-[96vw]
+          flex flex-col items-center justify-center
+          gap-3
+          md:flex-row md:justify-center md:gap-8
+        "
+      >
+        {/* Profile */}
+        <div className="flex items-center">
+          <TravBadge />
+        </div>
 
-          {/* Profile */}
-          <div className="flex items-center">
-            <TravBadge />
-          </div>
-
-          {/* Tabs */}
-          <div className="flex items-center">
-            <TabBar />
-          </div>
-
+        {/* Tabs */}
+        <div className="w-full md:w-auto flex justify-center">
+          <TabBar />
         </div>
       </div>
 
