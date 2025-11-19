@@ -126,7 +126,7 @@ export default function Campfire() {
     }
 
     function onRest() {
-      receiveWhisper("The fire accepts what you release.", "rare");
+      receiveWhisper("“In the warmth of the fire, your spirit finds rest.", "rare");
     }
 
     window.addEventListener("campfire:whisper", onWh as EventListener);
