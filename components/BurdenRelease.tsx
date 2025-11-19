@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Howl } from "howler";
 import { performRitual } from "@/lib/rituals";
 
-export default function BurdenRelease() {
+export default function BurdenRelease({ onRelease }: { onRelease?: () => void }) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
 
@@ -26,9 +26,7 @@ export default function BurdenRelease() {
   function confirmRelease() {
     if (!text.trim()) return;
 
-    try {
-      fire.play();
-    } catch {}
+    try { fire.play(); } catch {}
 
     setTimeout(() => {
       performRitual(
@@ -39,6 +37,8 @@ export default function BurdenRelease() {
       window.dispatchEvent(
         new CustomEvent("burden:released", { detail: { text } })
       );
+
+      onRelease?.(); // ← FIX: fire callback if provided
 
       setText("");
       setOpen(false);
