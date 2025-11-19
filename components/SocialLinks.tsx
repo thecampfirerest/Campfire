@@ -11,7 +11,7 @@ export default function SocialLinks() {
     >
       {/* Discord */}
       <a
-        href="https://discord.com" // <-- replace with your real link
+        href="https://discord.gg/xU6qQq4PPp" // <-- replace with your real link
         target="_blank"
         className="
           w-12 h-12 rounded-full bg-black/60 border border-white/10 shadow-lg
@@ -28,7 +28,7 @@ export default function SocialLinks() {
 
       {/* X */}
       <a
-        href="https://x.com" // <-- replace with real link
+        href="https://x.com/CampfireRest" // <-- replace with real link
         target="_blank"
         className="
           w-12 h-12 rounded-full bg-black/60 border border-white/10 shadow-lg
@@ -45,7 +45,7 @@ export default function SocialLinks() {
 
       {/* Telegram */}
       <a
-        href="https://t.me" // <-- replace with real link
+        href="https://t.me/campfirerest" // <-- replace with real link
         target="_blank"
         className="
           w-12 h-12 rounded-full bg-black/60 border border-white/10 shadow-lg
