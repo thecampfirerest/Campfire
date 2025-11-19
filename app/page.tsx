@@ -12,69 +12,47 @@ import SocialLinks from "@/components/SocialLinks";
 export default function Page() {
   return (
     <ModalProvider>
-      {/* Welcome message */}
+      {/* Welcome */}
       <WelcomeBanner />
-
-      {/* Auto-whisper */}
       <AutoGuidance />
 
       {/* ==========================================================
-          TOP BAR — FULLY RESPONSIVE 
-          Desktop: Trav left, Tabs center, Mute right
-          Tablet & Phone: Trav left (absolute), Tabs centered
+          TOP BAR — RESPONSIVE
+          Desktop: Trav left, Tabs center, Mute right (unchanged)
+          Mobile/Tablet: Trav ABOVE tabs
       =========================================================== */}
       <div className="fixed top-4 left-0 w-full z-50">
 
-        {/* DESKTOP ONLY (lg and up) */}
-        <div
-          className="
-            hidden lg:flex 
-            items-center justify-between 
-            px-8
-          "
-        >
-          {/* TravBadge left */}
+        {/* DESKTOP (unchanged) */}
+        <div className="hidden lg:flex items-center justify-between px-8">
           <div className="flex-shrink-0">
             <TravBadge />
           </div>
 
-          {/* Tabs centered */}
           <div className="flex-grow flex justify-center">
             <TabBar />
           </div>
 
-          {/* Right side reserved for mute button */}
           <div className="flex-shrink-0 mr-2"></div>
         </div>
 
-        {/* MOBILE + TABLET (lg:hidden) */}
-        <div
-          className="
-            lg:hidden
-            w-full max-w-[100vw]
-            flex flex-col items-center justify-center
-            gap-3 mx-auto
-            pt-2
-          "
-        >
-          {/* Trav left (absolute), Tabs center */}
-          <div className="relative w-full flex justify-center px-4">
+        {/* MOBILE + TABLET */}
+        <div className="lg:hidden w-full flex flex-col items-center gap-2 px-4">
 
-            {/* Trav left */}
-            <div className="absolute left-4 top-1">
-              <TravBadge />
-            </div>
+          {/* TravBadge ABOVE tabs */}
+          <div className="w-full flex justify-start">
+            <TravBadge />
+          </div>
 
-            {/* Tabs centered — shrink on tablet so it fits */}
-            <div className="flex justify-center w-full">
-              <div className="max-w-[85vw] md:max-w-[70vw] overflow-x-auto scrollbar-hide">
-                <TabBar />
-              </div>
+          {/* Tabs CENTERED below TravBadge */}
+          <div className="w-full flex justify-center">
+            <div className="max-w-[90vw] md:max-w-[70vw] overflow-x-auto scrollbar-hide">
+              <TabBar />
             </div>
           </div>
 
-          {/* CA BOX — Mobile & Tablet */}
-          <div className="w-full flex justify-center mt-1 px-4">
+          {/* CA box under tabs */}
+          <div className="w-full flex justify-center mt-1">
             <div
               className="
                 flex items-center gap-2
@@ -99,7 +77,7 @@ export default function Page() {
           </div>
         </div>
 
-        {/* DESKTOP CA BAR */}
+        {/* DESKTOP CA BAR (unchanged) */}
         <div className="hidden lg:flex w-full justify-center mt-3">
           <div
             className="
@@ -124,15 +102,12 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Centered Campfire */}
+      {/* Campfire */}
       <div className="flex items-center justify-center min-h-screen">
         <Campfire />
       </div>
 
-      {/* Compass bubble */}
       <CompassBubble />
-
-      {/* Social links */}
       <SocialLinks />
     </ModalProvider>
   );
