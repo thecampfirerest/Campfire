@@ -117,8 +117,17 @@ export default function AmbientAudio() {
         onClick={() => setMuted((s) => !s)}
         className="
           fixed z-[90]
-          right-4 top-[72px]    
-          md:top-12             
+
+          right-4 
+          top-24          /* mobile phones */
+
+          sm:top-20       /* iPhone+, small tablets */
+          md:top-16       /* iPad portrait */
+          lg:top-12       /* laptops */
+          
+          sm:right-6
+          md:right-8
+          lg:right-10
 
           w-10 h-10 rounded-full
           bg-black/60 border border-white/10
