@@ -2,7 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { loadMemory, saveMemory } from "@/lib/memoryClient";
 
-type StoryEntry = { title: string; story: string; at?: string; divine?: boolean };
+type StoryEntry = {
+  title: string;
+  story: string;
+  at?: string;
+  divine?: boolean;
+  savedAt?: string; // FIX: add missing field
+};
 
 export default function StoryTellerFullscreen({ onClose }: { onClose: () => void }) {
   const builtin: StoryEntry[] = [
