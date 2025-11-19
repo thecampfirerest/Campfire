@@ -6,10 +6,10 @@ import { evaluateBlessings } from "./blessings";
 type RitualDef = {
   id: string;
   title: string;
-  description: string;
+  description?: string; // FIXED: optional
   cooldownHours: number;
   warmth: number;
-  type: "simple" | "input" | "guided";
+  type?: "simple" | "input" | "guided"; // FIXED: optional
   unlockWarmth?: number;
   tags?: string[];
 };
@@ -33,42 +33,35 @@ export function canPerform(ritual: RitualDef): boolean {
 }
 
 export function performRitual(ritual: RitualDef, payload?: any) {
-  // record time
   const time = new Date().toISOString();
   saveMemory<string>(`ritual_last_${ritual.id}`, time);
 
-  // append to history
   const hist = loadMemory<any[]>("ritual_history") ?? [];
   hist.unshift({ id: ritual.id, at: time, payload });
   saveMemory("ritual_history", hist.slice(0, 200));
 
-  // warmth reward
   if (ritual.warmth) addWarmth(ritual.warmth);
 
-  // blessings evaluation
   try { evaluateBlessings(); } catch {}
 
-  // attempt to play global chimes (if UI provided helpers)
   try {
-    // rest chime helper (if available)
     if ((window as any).playRestChime) {
       try { (window as any).playRestChime(); } catch {}
     }
 
-    // generic ritual chime
     if ((window as any).playRitualChime) {
       try { (window as any).playRitualChime(); } catch {}
     }
 
-    // divine chime for special rituals (if tag suggests)
     if (ritual.tags?.includes("divine") && (window as any).playDivineChime) {
       try { (window as any).playDivineChime(); } catch {}
     }
   } catch {}
 
-  // notify UI to refresh ritual panels
   try {
-    window.dispatchEvent(new CustomEvent("ritual:update", { detail: { id: ritual.id, at: time } }));
+    window.dispatchEvent(
+      new CustomEvent("ritual:update", { detail: { id: ritual.id, at: time } })
+    );
   } catch {}
 
   return { ok: true };
