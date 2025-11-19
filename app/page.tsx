@@ -45,25 +45,58 @@ export default function Page() {
           <div className="flex-shrink-0 mr-2"></div>
         </div>
 
-        {/* MOBILE + TABLET VERSION (unchanged from your working layout) */}
-        <div
-          className="
-            lg:hidden
-            w-full max-w-[98vw]
-            flex flex-col items-center justify-center gap-2
-            mx-auto
-          "
-        >
-          {/* Row: TravBadge left + Tabs center */}
-          <div className="w-full flex items-center justify-between px-4">
-            <div className="flex-shrink-0">
-              <TravBadge />
-            </div>
+       {/* MOBILE + TABLET VERSION (fixed alignment) */}
+<div
+  className="
+    lg:hidden
+    w-full max-w-[100vw]
+    flex flex-col items-center justify-center gap-3
+    mx-auto
+    pt-2
+  "
+>
+  {/* Trav left (absolute), Tabs centered */}
+  <div className="relative w-full flex justify-center px-4">
 
-            <div className="flex-grow flex justify-center">
-              <TabBar />
-            </div>
-          </div>
+    {/* TravBadge pinned to left for mobile/tablet */}
+    <div className="absolute left-4 top-1">
+      <TravBadge />
+    </div>
+
+    {/* Centered Tabs — tablet gets reduced width */}
+    <div className="flex justify-center w-full">
+      <div className="max-w-[85vw] md:max-w-[70vw] overflow-x-auto scrollbar-hide">
+        <TabBar />
+      </div>
+    </div>
+  </div>
+
+  {/* CA BOX */}
+  <div className="w-full flex justify-center mt-1 px-4">
+    <div
+      className="
+        flex items-center gap-2
+        bg-black/30 backdrop-blur-md
+        border border-white/10
+        rounded-full px-4 py-2
+        text-white/80 text-xs
+        max-w-[90vw]
+      "
+    >
+      <span className="truncate">CA: CA will be pasted here on launch</span>
+
+      <button
+        onClick={() =>
+          navigator.clipboard.writeText('CA will be pasted here on launch')
+        }
+        className="text-white/60 hover:text-white transition"
+      >
+        📋
+      </button>
+    </div>
+  </div>
+</div>
+
 
           {/* CA BOX */}
           <div className="w-full flex justify-center mt-1 px-4">
