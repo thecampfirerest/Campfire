@@ -11,7 +11,7 @@ export default function SocialLinks() {
     >
       {/* Discord */}
       <a
-        href="https://discord.gg/xU6qQq4PPp" // <-- replace with your real link
+        href="Coming soon" // <-- replace with your real link
         target="_blank"
         className="
           w-12 h-12 rounded-full bg-black/60 border border-white/10 shadow-lg
