@@ -4,7 +4,7 @@ import { useModal } from "@/components/ModalRoot";
 
 const TABS = [
   { id: "stories", label: "Stories" },
-  { id: "rituals", label: "Ritals" },
+  { id: "rituals", label: "Rituals" },
   { id: "journal", label: "Journal" },
   { id: "covenant", label: "Covenant" },
   { id: "memory", label: "Memory" },
