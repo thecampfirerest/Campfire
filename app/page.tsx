@@ -1,46 +1,114 @@
-export default function Placeholder() {
+"use client";
+
+import Campfire from "@/components/Campfire";
+import { ModalProvider } from "@/components/ModalRoot";
+import CompassBubble from "@/components/CompassBubble";
+import WelcomeBanner from "@/components/WelcomeBanner";
+import AutoGuidance from "@/components/AutoGuidance";
+import TravBadge from "@/components/TravBadge";
+import TabBar from "@/components/TabBar";
+import SocialLinks from "@/components/SocialLinks";
+
+export default function Page() {
   return (
-    <div className="relative min-h-screen bg-black text-white flex items-center justify-center overflow-hidden">
-      
-      {/* Glowing Ember Particles */}
-      <div className="pointer-events-none absolute inset-0 ember-particles" />
+    <ModalProvider>
+      {/* Welcome */}
+      <WelcomeBanner />
+      <AutoGuidance />
 
-      {/* Center Content */}
-      <div className="relative z-10 text-center px-8">
-        <h1 className="text-4xl font-bold mb-4 text-amber-300 drop-shadow-[0_0_12px_rgba(255,180,90,0.35)]">
-          🔥 The Fire Sleeps…
-        </h1>
+      {/* ==========================================================
+          TOP BAR — RESPONSIVE
+          Desktop: Trav left, Tabs center, Mute right (unchanged)
+          Mobile/Tablet: Trav ABOVE tabs
+      =========================================================== */}
+      <div className="fixed top-4 left-0 w-full z-50">
 
-        <p className="text-white/80 text-lg max-w-md mx-auto leading-relaxed">
-          A quiet ember waits beneath the ashes.  
-          Return soon, traveler — the flame will awaken.
-        </p>
+        {/* DESKTOP (unchanged) */}
+        <div className="hidden lg:flex items-center justify-between px-8">
+          <div className="flex-shrink-0">
+            <TravBadge />
+          </div>
+
+          <div className="flex-grow flex justify-center">
+            <TabBar />
+          </div>
+
+          <div className="flex-shrink-0 mr-2"></div>
+        </div>
+
+        {/* MOBILE + TABLET */}
+        <div className="lg:hidden w-full flex flex-col items-center gap-2 px-4">
+
+          {/* TravBadge ABOVE tabs */}
+          <div className="w-full flex justify-start">
+            <TravBadge />
+          </div>
+
+          {/* Tabs CENTERED below TravBadge */}
+          <div className="w-full flex justify-center">
+            <div className="max-w-[90vw] md:max-w-[70vw] overflow-x-auto scrollbar-hide">
+              <TabBar />
+            </div>
+          </div>
+
+          {/* CA box under tabs */}
+          <div className="w-full flex justify-center mt-1">
+            <div
+              className="
+                flex items-center gap-2
+                bg-black/30 backdrop-blur-md
+                border border-white/10
+                rounded-full px-4 py-2
+                text-white/80 text-xs
+                max-w-[90vw]
+              "
+            >
+              <span className="truncate">CA: F9yM72tsdWn3Fa5od9UWtnU19rCjEKqMypyjVCEspump</span>
+
+              <button
+                onClick={() =>
+                  navigator.clipboard.writeText("F9yM72tsdWn3Fa5od9UWtnU19rCjEKqMypyjVCEspump")
+                }
+                className="text-white/60 hover:text-white transition"
+              >
+                📋
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* DESKTOP CA BAR (unchanged) */}
+        <div className="hidden lg:flex w-full justify-center mt-3">
+          <div
+            className="
+              flex items-center gap-2
+              bg-black/30 backdrop-blur-md
+              border border-white/10
+              rounded-full px-4 py-2
+              text-white/80 text-xs
+            "
+          >
+            <span className="truncate">CA: F9yM72tsdWn3Fa5od9UWtnU19rCjEKqMypyjVCEspump</span>
+
+            <button
+              onClick={() =>
+                navigator.clipboard.writeText("F9yM72tsdWn3Fa5od9UWtnU19rCjEKqMypyjVCEspump")
+              }
+              className="text-white/60 hover:text-white transition"
+            >
+              📋
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Soft glow behind text */}
-      <div className="absolute w-96 h-96 bg-amber-500/20 blur-3xl rounded-full -z-10" />
-      
-      {/* Inline CSS for ember particles */}
-      <style>{`
-        .ember-particles {
-          background-image:
-            radial-gradient(circle at 20% 30%, rgba(255,160,70,0.08) 0%, transparent 40%),
-            radial-gradient(circle at 75% 60%, rgba(255,130,50,0.05) 0%, transparent 45%),
-            radial-gradient(circle at 50% 80%, rgba(255,100,30,0.04) 0%, transparent 50%);
-          animation: emberGlow 6s ease-in-out infinite alternate;
-        }
+      {/* Campfire */}
+      <div className="flex items-center justify-center min-h-screen">
+        <Campfire />
+      </div>
 
-        @keyframes emberGlow {
-          0% {
-            opacity: 0.55;
-            transform: scale(1);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1.05);
-          }
-        }
-      `}</style>
-    </div>
+      <CompassBubble />
+      <SocialLinks />
+    </ModalProvider>
   );
 }
