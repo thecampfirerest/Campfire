@@ -8,6 +8,8 @@ import AutoGuidance from "@/components/AutoGuidance";
 import TravBadge from "@/components/TravBadge";
 import TabBar from "@/components/TabBar";
 import SocialLinks from "@/components/SocialLinks";
+import RoadmapBubble from "@/components/RoadmapBubble";
+import DocsBubble from "@/components/DocsBubble";
 
 export default function Page() {
   return (
@@ -108,6 +110,8 @@ export default function Page() {
       </div>
 
       <CompassBubble />
+      <RoadmapBubble />
+      <DocsBubble />
       <SocialLinks />
     </ModalProvider>
   );

@@ -12,10 +12,14 @@ import MemoryPanel from "@/components/MemoryPanel";
 import BlessingsPanel from "@/components/BlessingsPanel";
 import BadgesPanel from "@/components/BadgesPanel";
 
-// New ritual panels (small modal style)
+// New ritual panels
 import StillnessPanel from "@/components/StillnessPanel";
 import ForgivenessPanel from "@/components/ForgivenessPanel";
 import DestinyVigilPanel from "@/components/DestinyVigilPanel";
+
+// ⭐ NEW: Roadmap + Docs panels
+import RoadmapPanel from "@/components/RoadmapPanel";
+import DocsPanel from "@/components/DocsPanel";
 
 const ModalContext = createContext<any>(null);
 
@@ -34,8 +38,9 @@ export function ModalProvider({ children }: any) {
     setActive(null);
   }
 
-  // Minimal global listener: open panels by dispatching 'open:panel' CustomEvent.
-  // Also listens for programmatic close via 'close:modal'.
+  // ------------------------------------------
+  // GLOBAL EVENT LISTENERS
+  // ------------------------------------------
   useEffect(() => {
     function onOpenPanel(e: any) {
       try {
@@ -45,34 +50,52 @@ export function ModalProvider({ children }: any) {
 
         if (detail.prefill && detail.id === "journal") {
           window.setTimeout(() => {
-            window.dispatchEvent(new CustomEvent("journal:prefill", { detail: detail.prefill }));
+            window.dispatchEvent(
+              new CustomEvent("journal:prefill", { detail: detail.prefill })
+            );
           }, 40);
         }
 
         if (detail.prefill && detail.id === "covenant") {
           window.setTimeout(() => {
-            window.dispatchEvent(new CustomEvent("covenant:prefill", { detail: detail.prefill }));
+            window.dispatchEvent(
+              new CustomEvent("covenant:prefill", { detail: detail.prefill })
+            );
           }, 40);
         }
-      } catch (err) {
-        // ignore
-      }
+      } catch {}
     }
 
     function onCloseModal() {
       setActive(null);
     }
 
+    // ⭐ NEW: roadmap/docs listeners
+    function openRoadmap() {
+      setActive("roadmap");
+    }
+    function openDocs() {
+      setActive("docs");
+    }
+
     window.addEventListener("open:panel", onOpenPanel);
     window.addEventListener("close:modal", onCloseModal);
+
+    // ⭐ NEW
+    window.addEventListener("open:roadmap", openRoadmap);
+    window.addEventListener("open:docs", openDocs);
 
     return () => {
       window.removeEventListener("open:panel", onOpenPanel);
       window.removeEventListener("close:modal", onCloseModal);
+
+      // ⭐ NEW
+      window.removeEventListener("open:roadmap", openRoadmap);
+      window.removeEventListener("open:docs", openDocs);
     };
   }, []);
 
-  // Add Escape key handler + initial focus when modal opens (minimal, additive only)
+  // ESC key + focus handling
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
@@ -82,7 +105,7 @@ export function ModalProvider({ children }: any) {
 
     if (active) {
       window.addEventListener("keydown", onKey);
-      // attempt to focus first focusable element inside modal after render
+
       setTimeout(() => {
         try {
           const root = modalRootRef.current;
@@ -113,39 +136,43 @@ export function ModalProvider({ children }: any) {
       )}
 
       {/* MODAL WRAPPER */}
-{active && active !== "stories" && (
-  <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 pointer-events-none">
-    <div className="relative w-full max-w-[1250px] bg-black/40 border border-white/10 rounded-xl p-8 shadow-xl pointer-events-auto">
+      {active && active !== "stories" && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 pointer-events-none">
+          <div
+            ref={modalRootRef}
+            className="relative w-full max-w-[1250px] bg-black/40 border border-white/10 rounded-xl p-8 shadow-xl pointer-events-auto"
+          >
+            {/* Close button */}
+            <button
+              onClick={close}
+              aria-label="Close"
+              title="Close"
+              className="absolute -top-3 -right-3 z-50 text-white/80 hover:text-white text-lg leading-none p-1"
+            >
+              ✕
+            </button>
 
-      {/* Close button */}
-      <button
-        onClick={close}
-        aria-label="Close"
-        title="Close"
-        className="absolute -top-3 -right-3 z-50 text-white/80 hover:text-white text-lg leading-none p-1"
-        style={{ background: "transparent", border: "none" }}
-      >
-        ✕
-      </button>
+            {/* PANEL ROUTER */}
+            {active === "rituals" && <RitualsPanel />}
+            {active === "journal" && <Journal />}
+            {active === "covenant" && <CovenantPanel />}
+            {active === "memory" && <MemoryPanel />}
+            {active === "blessings" && <BlessingsPanel />}
+            {active === "badges" && <BadgesPanel />}
+            {active === "ascension" && <AscensionPanel />}
+            {active === "codex" && <CodexPanel />}
+            {active === "stillness" && <StillnessPanel />}
+            {active === "forgiveness" && <ForgivenessPanel />}
+            {active === "destiny" && <DestinyVigilPanel />}
 
-      {/* Panels */}
-      {active === "rituals" && <RitualsPanel />}
-      {active === "journal" && <Journal />}
-      {active === "covenant" && <CovenantPanel />}
-      {active === "memory" && <MemoryPanel />}
-      {active === "blessings" && <BlessingsPanel />}
-      {active === "badges" && <BadgesPanel />}
-      {active === "ascension" && <AscensionPanel />}
-      {active === "codex" && <CodexPanel />}
-      {active === "stillness" && <StillnessPanel />}
-      {active === "forgiveness" && <ForgivenessPanel />}
-      {active === "destiny" && <DestinyVigilPanel />}
-    </div>
-  </div>
-)}
+            {/* ⭐ NEW: ROADMAP & DOCS */}
+            {active === "roadmap" && <RoadmapPanel />}
+            {active === "docs" && <DocsPanel />}
+          </div>
+        </div>
+      )}
 
-
-      {/* SPECIAL: STORY FULLSCREEN HANDLING */}
+      {/* STORY FULLSCREEN */}
       {active === "stories" && (
         <StoryTellerFullscreen onClose={() => setActive(null)} />
       )}
